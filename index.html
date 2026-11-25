@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#0f172a">
+  <title>USDT Earning — Telegram Mini App</title>
+
+  <!-- Telegram Web App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Google Fonts for clean Arabic & English typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --panel-hover: #26354d;
+      --panel-light: #334155;
+      --green: #10b981;
+      --green-glow: rgba(16, 185, 129, 0.25);
+      --green-dark: #064e3b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(148, 163, 184, 0.14);
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --gold: #fbbf24;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Cairo', 'Plus Jakarta Sans', sans-serif;
+      padding-bottom: 96px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Header Styling */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: 0.3px;
+    }
+
+    .logo {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #34d399, #059669);
+      color: #022c22;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      font-size: 20px;
+      font-weight: 800;
+      box-shadow: 0 4px 14px var(--green-glow);
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 14px;
+      transition: transform 0.15s ease, background-color 0.2s ease, opacity 0.2s ease;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .lang {
+      padding: 8px 14px;
+      border-radius: 10px;
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .lang:hover {
+      background: var(--panel-hover);
+    }
+
+    /* Main Container */
+    main {
+      width: min(100% - 28px, 560px);
+      margin: 18px auto 0;
+    }
+
+    /* Balance Card */
+    .balance {
+      position: relative;
+      overflow: hidden;
+      padding: 24px;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5);
+      margin-bottom: 18px;
+    }
+
+    .balance::after {
+      content: "";
+      position: absolute;
+      top: -40%;
+      inset-inline-end: -20%;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, var(--green-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .amount {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      margin: 10px 0;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .green {
+      color: var(--green);
+      font-size: 20px;
+    }
+
+    /* Stats Grid */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .stat, .item {
+      background: var(--panel);
+      padding: 18px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .stat strong {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      display: block;
+      margin-top: 6px;
+      font-size: 22px;
+      color: var(--text);
+    }
+
+    h3 {
+      font-size: 17px;
+      font-weight: 800;
+      margin: 22px 0 12px;
+      color: var(--text);
+    }
+
+    /* Service Cards Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .item {
+      text-align: center;
+      min-height: 128px;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .item:hover {
+      background: var(--panel-hover);
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+
+    .item .ico {
+      font-size: 28px;
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
+      margin-bottom: 10px;
+    }
+
+    .item b {
+      font-size: 15px;
+    }
+
+    .item p {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 6px 0 0;
+      font-weight: 600;
+    }
+
+    /* Section Transitions */
+    .section {
+      display: none;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Buttons & Inputs */
+    .action {
+      width: 100%;
+      background: linear-gradient(135deg, #34d399, #10b981);
+      color: #022c22;
+      padding: 14px;
+      border-radius: 13px;
+      margin-top: 16px;
+      font-size: 15px;
+      font-weight: 800;
+      box-shadow: 0 6px 20px -4px var(--green-glow);
+    }
+
+    .action:hover {
+      filter: brightness(1.05);
+    }
+
+    .row {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .badge {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--green);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .form-group {
+      margin-top: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--green);
+    }
+
+    input::placeholder {
+      color: var(--muted);
+      opacity: 0.7;
+    }
+
+    .notice {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 12.5px;
+      line-height: 1.7;
+      margin-top: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    /* Admin Exclusive Styles */
+    .admin-only {
+      display: none !important;
+    }
+
+    body.is-admin .admin-only {
+      display: flex !important;
+    }
+
+    body.is-admin section.admin-only.active {
+      display: block !important;
+    }
+
+    .admin-card {
+      background: linear-gradient(145deg, #1e293b 0%, #172033 100%);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .admin-badge {
+      background: rgba(251, 191, 36, 0.15);
+      color: var(--gold);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .btn-sm {
+      padding: 8px 12px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .btn-approve {
+      background: var(--green);
+      color: #022c22;
+    }
+
+    .btn-reject {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    /* Bottom Navigation */
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 6px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+
+    nav button {
+      background: none;
+      color: var(--muted);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 10px;
+    }
+
+    nav button.active {
+      color: var(--green);
+    }
+
+    nav span {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    /* Custom Toast Notification (Replaces native alert) */
+    .toast {
+      position: fixed;
+      top: 76px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: var(--panel-hover);
+      color: var(--text);
+      border: 1px solid var(--green);
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      width: max-content;
+      max-width: calc(100% - 32px);
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Custom Non-Blocking Notification Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="logo">₮</div>
+      <span>USDT EARNING</span>
+    </div>
+    <button class="lang" onclick="toggleLang()" aria-label="Switch Language">
+      🌐 <span id="langLabel">EN</span>
+    </button>
+  </header>
+
+  <main>
+
+    <!-- HOME SECTION -->
+    <section id="home" class="section active">
+      <div class="balance">
+        <div class="muted" data-ar="رصيدك الإجمالي" data-en="TOTAL BALANCE">رصيدك الإجمالي</div>
+        <div class="amount"><span id="mainBalance">0.00</span> <span class="green">USDT</span></div>
+        <div class="muted" data-ar="مرحباً بك في منصة الربح الموثوقة" data-en="Welcome to USDT Earning Platform">
+          مرحباً بك في منصة الربح الموثوقة
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="muted" data-ar="إجمالي الإحالات" data-en="Total Referrals">إجمالي الإحالات</div>
+          <strong id="homeReferrals">0</strong>
+        </div>
+        <div class="stat">
+          <div class="muted" data-ar="المهام المكتملة" data-en="Completed Tasks">المهام المكتملة</div>
+          <strong id="homeTasks">0</strong>
+        </div>
+      </div>
+
+      <h3 data-ar="الخدمات الرئيسية" data-en="Main Services">الخدمات الرئيسية</h3>
+
+      <div class="grid">
+        <button class="item" onclick="showPage('referrals')">
+          <span class="ico">👥</span>
+          <b data-ar="دعوة الأصدقاء" data-en="Invite Friends">دعوة الأصدقاء</b>
+          <p class="green" style="font-size: 13px;">+0.50 USDT</p>
+        </button>
+
+        <button class="item" onclick="showPage('tasks')">
+          <span class="ico">📋</span>
+          <b data-ar="المهام" data-en="Tasks">المهام</b>
+          <p data-ar="أنجز واربح" data-en="Complete and earn">أنجز واربح</p>
+        </button>
+
+        <button class="item" onclick="showPage('ads')">
+          <span class="ico">▶️</span>
+          <b data-ar="الإعلانات" data-en="Watch Ads">الإعلانات</b>
+          <p data-ar="شاهد واكسب" data-en="Watch and earn">شاهد واكسب</p>
+        </button>
+
+        <button class="item" onclick="showPage('withdraw')">
+          <span class="ico">💳</span>
+          <b data-ar="السحب" data-en="Withdraw">السحب</b>
+          <p data-ar="سحب فوري" data-en="Fast payout">سحب فوري</p>
+        </button>
+      </div>
+    </section>
+
+    <!-- REFERRALS SECTION -->
+    <section id="referrals" class="section">
+      <h3 data-ar="دعوة الأصدقاء" data-en="Invite Friends">دعوة الأصدقاء</h3>
+      <div class="balance">
+        <div class="muted" data-ar="مكافأة كل إحالة مؤهلة" data-en="Reward per qualified referral">
+          مكافأة كل إحالة مؤهلة
+        </div>
+        <div class="amount"><span id="refRewardDisplay">0.50</span> <span class="green">USDT</span></div>
+      </div>
+
+      <div class="row">
+        <span data-ar="عدد أصدقائك" data-en="Your referrals">عدد أصدقائك</span>
+        <b id="refCount">0</b>
+      </div>
+      <div class="row">
+        <span data-ar="أرباح الإحالات" data-en="Referral earnings">أرباح الإحالات</span>
+        <b id="refEarnings" class="badge">0.00 USDT</b>
+      </div>
+      <div class="row">
+        <span data-ar="أرباح الإحالات" data-en="Referral earnings">أرباح الإحالات</span>
+        <b class="badge">0.00 USDT</b>
+      </div>
+
+      <button class="action" onclick="copyReferral()" data-ar="نسخ رابط الدعوة" data-en="Copy Referral Link">
+        نسخ رابط الدعوة
+      </button>
+
+      <div class="notice">
+        <span>ℹ️</span>
+        <span data-ar="تُمنح المكافأة بعد تأهيل المستخدم الجديد والتحقق من صحة الإحالة." data-en="Rewards are granted after the new user qualifies and the referral is verified.">
+          تُمنح المكافأة بعد تأهيل المستخدم الجديد والتحقق من صحة الإحالة.
+        </span>
+      </div>
+    </section>
+
+    <!-- TASKS SECTION -->
+    <section id="tasks" class="section">
+      <h3 data-ar="المهام المتاحة" data-en="Available Tasks">المهام المتاحة</h3>
+
+      <div class="row">
+        <span>📢 <span data-ar="الاشتراك في القنوات" data-en="Join Official Channels">الاشتراك في القنوات</span></span>
+        <b class="badge">+0.10 USDT</b>
+      </div>
+
+      <div class="row">
+        <span>📅 <span data-ar="المهمة اليومية" data-en="Daily Check-in Task">المهمة اليومية</span></span>
+        <b class="badge">+0.05 USDT</b>
+      </div>
+
+      <div class="notice">
+        <span>⏳</span>
+        <span data-ar="سيتم تفعيل المهام والمكافآت تلقائياً بعد ربط الواجهة بالخادم." data-en="Tasks and rewards will activate automatically after backend integration.">
+          سيتم تفعيل المهام والمكافآت تلقائياً بعد ربط الواجهة بالخادم.
+        </span>
+      </div>
+    </section>
+
+    <!-- ADS SECTION -->
+    <section id="ads" class="section">
+      <h3 data-ar="مشاهدة الإعلانات" data-en="Watch Ads">مشاهدة الإعلانات</h3>
+
+      <div class="item" style="width: 100%; padding: 28px 18px;">
+        <span class="ico">🎬</span>
+        <b data-ar="الإعلانات المتاحة" data-en="Available Ads">الإعلانات المتاحة</b>
+        <p data-ar="لا توجد إعلانات متاحة في منطقتك حالياً" data-en="No ads available in your region right now">
+          لا توجد إعلانات متاحة في منطقتك حالياً
+        </p>
+      </div>
+
+      <div class="notice">
+        <span>🛡️</span>
+        <span data-ar="لن تُضاف أي مكافأة إلا بعد التحقق من مشاهدة إعلان حقيقي بالكامل." data-en="Rewards require verified full completion of an active advertisement.">
+          لن تُضاف أي مكافأة إلا بعد التحقق من مشاهدة إعلان حقيقي بالكامل.
+        </span>
+      </div>
+    </section>
+
+    <!-- WITHDRAW SECTION -->
+    <section id="withdraw" class="section">
+      <h3 data-ar="سحب الأرباح" data-en="Withdraw Earnings">سحب الأرباح</h3>
+
+      <div class="balance">
+        <div class="muted" data-ar="الرصيد المتاح للسحب" data-en="Available balance">الرصيد المتاح للسحب</div>
+        <div class="amount"><span id="withdrawBalance">0.00</span> <span class="green">USDT</span></div>
+        <div class="muted" style="margin-top: 6px; color: var(--gold);">
+          <span data-ar="الحد الأدنى للسحب:" data-en="Minimum Withdrawal:">الحد الأدنى للسحب:</span>
+          <b id="minWithdrawDisplay">10.00</b> USDT
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="network" data-ar="اختر الشبكة" data-en="Select Network">اختر الشبكة</label>
+        <select id="network">
+          <option value="TRC20">USDT (TRC20 - Tron)</option>
+          <option value="BEP20">USDT (BEP20 - BSC)</option>
+          <option value="TON">USDT (TON Network)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="wallet" data-ar="عنوان المحفظة" data-en="Wallet Address">عنوان المحفظة</label>
+        <input id="wallet" type="text" data-ar-placeholder="أدخل عنوان محفظة USDT" data-en-placeholder="Enter USDT wallet address" placeholder="أدخل عنوان محفظة USDT">
+      </div>
+
+      <div class="form-group">
+        <label for="amount" data-ar="المبلغ المطلوب (الحد الأدنى 10 USDT)" data-en="Withdrawal Amount (Min 10 USDT)">المبلغ المطلوب (الحد الأدنى 10 USDT)</label>
+        <input id="amount" type="number" min="10" step="0.01" placeholder="10.00 USDT">
+      </div>
+
+      <button class="action" onclick="requestWithdraw()" data-ar="إرسال طلب السحب" data-en="Submit Withdrawal">
+        إرسال طلب السحب
+      </button>
+
+      <div class="notice">
+        <span>⚠️</span>
+        <span data-ar="الحد الأدنى للسحب هو 10 USDT. تخضع الطلبات لمراجعة الإدارة قبل التحويل." data-en="Minimum withdrawal is 10 USDT. Requests are reviewed by admin before transfer.">
+          الحد الأدنى للسحب هو 10 USDT. تخضع الطلبات لمراجعة الإدارة قبل التحويل.
+        </span>
+      </div>
+    </section>
+
+    <!-- PROFILE SECTION -->
+    <section id="profile" class="section">
+      <h3 data-ar="حسابي" data-en="My Account">حسابي</h3>
+
+      <div class="row">
+        <span data-ar="الاسم" data-en="Name">الاسم</span>
+        <b id="userName">Guest</b>
+      </div>
+
+      <div class="row">
+        <span>Telegram ID</span>
+        <b id="userId" class="badge">—</b>
+      </div>
+
+      <div class="row">
+        <span data-ar="الشبكات المدعومة" data-en="Supported Networks">الشبكات المدعومة</span>
+        <b>TRC20 / BEP20 / TON</b>
+      </div>
+
+      <!-- Secret Admin Trigger Button (Visible ONLY to Admin ID 6929261368) -->
+      <button class="action admin-only" style="background: linear-gradient(135deg, #fbbf24, #d97706); color: #1e1b4b; justify-content: center; gap: 8px;" onclick="showPage('admin')">
+        <span>👑</span>
+        <span data-ar="فتح لوحة تحكم الأدمن" data-en="Open Admin Control Panel">فتح لوحة تحكم الأدمن</span>
+      </button>
+    </section>
+
+    <!-- EXCLUSIVE ADMIN PANEL SECTION (ID: 6929261368) -->
+    <section id="admin" class="section admin-only">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin: 20px 0 14px;">
+        <h3 style="margin: 0; color: var(--gold);" data-ar="👑 لوحة تحكم الأدمن" data-en="👑 Admin Panel">👑 لوحة تحكم الأدمن</h3>
+        <span class="admin-badge">ID: 6929261368</span>
+      </div>
+
+      <!-- Admin Quick Stats -->
+      <div class="stats">
+        <div class="stat" style="border-color: rgba(251, 191, 36, 0.3);">
+          <div class="muted" data-ar="إجمالي المستخدمين" data-en="Total Users">إجمالي المستخدمين</div>
+          <strong id="adminTotalUsers">1,248</strong>
+        </div>
+        <div class="stat" style="border-color: rgba(251, 191, 36, 0.3);">
+          <div class="muted" data-ar="طلبات السحب المعلقة" data-en="Pending Payouts">طلبات السحب المعلقة</div>
+          <strong id="adminPendingCount" style="color: var(--gold);">1</strong>
+        </div>
+      </div>
+
+      <!-- Bot Global Settings Control -->
+      <div class="admin-card">
+        <b style="display: block; margin-bottom: 12px; color: var(--gold);" data-ar="⚙️ إعدادات البوت والمكافآت" data-en="⚙️ Bot & Reward Settings">⚙️ إعدادات البوت والمكافآت</b>
+
+        <div class="form-group" style="margin-top: 8px;">
+          <label data-ar="اسم مستخدم البوت (بدون @)" data-en="Bot Username (without @)">اسم مستخدم البوت (بدون @)</label>
+          <input id="adminBotUser" type="text" value="YOUR_BOT_USERNAME" placeholder="MyUsdtBot">
+        </div>
+
+        <div class="grid" style="margin-top: 10px;">
+          <div>
+            <label data-ar="الحد الأدنى للسحب (USDT)" data-en="Min Withdraw (USDT)">الحد الأدنى للسحب (USDT)</label>
+            <input id="adminMinWithdraw" type="number" step="0.5" value="10">
+          </div>
+          <div>
+            <label data-ar="مكافأة الإحالة (USDT)" data-en="Referral Reward (USDT)">مكافأة الإحالة (USDT)</label>
+            <input id="adminRefReward" type="number" step="0.05" value="0.50">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label data-ar="حالة البوت" data-en="Bot Status">حالة البوت</label>
+          <select id="adminBotStatus">
+            <option value="active">🟢 نشط ويعمل (Active)</option>
+            <option value="maintenance">🟡 وضع الصيانة (Maintenance)</option>
+          </select>
+        </div>
+
+        <button class="action" style="background: linear-gradient(135deg, #fbbf24, #d97706); color: #1e1b4b;" onclick="saveAdminSettings()" data-ar="حفظ الإعدادات وتطبيقها" data-en="Save & Apply Settings">
+          حفظ الإعدادات وتطبيقها
+        </button>
+      </div>
+
+      <!-- Quick Balance Adjustment (For Admin Testing / User Management) -->
+      <div class="admin-card">
+        <b style="display: block; margin-bottom: 10px; color: var(--text);" data-ar="💰 تعديل رصيد مستخدم (Telegram ID)" data-en="💰 Set User Balance (Telegram ID)">💰 تعديل رصيد مستخدم (Telegram ID)</b>
+        <div class="form-group" style="margin-top: 6px; margin-bottom: 8px;">
+          <input id="adminTargetUserId" type="number" placeholder="Telegram ID (اتركه فارغاً لحسابك)">
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <input id="adminAddBalance" type="number" step="1" value="15" placeholder="USDT">
+          <button class="btn-sm btn-approve" style="white-space: nowrap; padding: 0 16px;" onclick="adminSetDemoBalance()" data-ar="تحديث الرصيد" data-en="Set Balance">
+            تحديث الرصيد
+          </button>
+        </div>
+      </div>
+
+      <!-- Pending Withdrawal Requests Management -->
+      <h3 style="color: var(--gold);" data-ar="📥 إدارة طلبات السحب" data-en="📥 Withdrawal Requests">📥 إدارة طلبات السحب</h3>
+      <div id="adminWithdrawList">
+        <!-- Sample / Live Requests injected here -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Navigation Bar -->
+  <nav>
+    <button data-nav="home" class="active" onclick="showPage('home')">
+      <span>⌂</span><b data-ar="الرئيسية" data-en="Home">الرئيسية</b>
+    </button>
+    <button data-nav="referrals" onclick="showPage('referrals')">
+      <span>👥</span><b data-ar="الدعوات" data-en="Invite">الدعوات</b>
+    </button>
+    <button data-nav="tasks" onclick="showPage('tasks')">
+      <span>📋</span><b data-ar="المهام" data-en="Tasks">المهام</b>
+    </button>
+    <button data-nav="withdraw" onclick="showPage('withdraw')">
+      <span>💳</span><b data-ar="السحب" data-en="Wallet">السحب</b>
+    </button>
+    <button data-nav="profile" onclick="showPage('profile')">
+      <span>👤</span><b data-ar="حسابي" data-en="Profile">حسابي</b>
+    </button>
+    <!-- Admin Nav Tab (Hidden for normal users, visible ONLY to 6929261368) -->
+    <button data-nav="admin" class="admin-only" style="color: var(--gold);" onclick="showPage('admin')">
+      <span>👑</span><b data-ar="الأدمن" data-en="Admin">الأدمن</b>
+    </button>
+  </nav>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    const ADMIN_TELEGRAM_ID = "6929261368";
+    // رابط الخادم الخلفي (اتركه فارغاً إذا كانت الواجهة مستضافة على نفس خادم bot.py)
+    const API_BASE_URL = "";
+
+    let language = "ar";
+    let toastTimeout;
+
+    // App State
+    let appConfig = {
+      botUsername: "YOUR_BOT_USERNAME",
+      minWithdraw: 10.00,
+      refReward: 0.50,
+      botStatus: "active"
+    };
+
+    let userState = {
+      id: null,
+      name: "Guest",
+      balance: 0.00,
+      referrals: 0,
+      tasksDone: 0,
+      isAdmin: false
+    };
+
+    // Withdrawal requests queue synced from Backend
+    let withdrawQueue = [];
+
+    /**
+     * Helper to send authenticated requests to the Python Backend
+     */
+    async function apiRequest(endpoint, payload = {}) {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          initData: tg?.initData || "",
+          ...payload
+        })
+      });
+      return await response.json();
+    }
+
+    /**
+     * Syncs live user balance, referrals, settings, and admin data from Telegram Bot Backend
+     */
+    async function syncWithBackend() {
+      try {
+        const res = await apiRequest("/api/sync");
+        if (!res.ok) return;
+
+        appConfig.botUsername = res.botUsername || appConfig.botUsername;
+        appConfig = { ...appConfig, ...res.config };
+
+        userState.balance = res.user.balance;
+        userState.referrals = res.user.referrals;
+        userState.tasksDone = res.user.tasksDone;
+
+        // Apply live config to UI
+        document.getElementById("minWithdrawDisplay").textContent = appConfig.minWithdraw.toFixed(2);
+        document.getElementById("refRewardDisplay").textContent = appConfig.refReward.toFixed(2);
+        document.getElementById("homeReferrals").textContent = userState.referrals;
+        document.getElementById("homeTasks").textContent = userState.tasksDone;
+        document.getElementById("refCount").textContent = userState.referrals;
+        document.getElementById("refEarnings").textContent = `${(userState.referrals * appConfig.refReward).toFixed(2)} USDT`;
+        updateBalanceUI();
+
+        if (res.user.isAdmin && res.adminData) {
+          enableAdminMode();
+          document.getElementById("adminTotalUsers").textContent = res.adminData.totalUsers;
+          document.getElementById("adminBotUser").value = appConfig.botUsername;
+          document.getElementById("adminMinWithdraw").value = appConfig.minWithdraw;
+          document.getElementById("adminRefReward").value = appConfig.refReward;
+          document.getElementById("adminBotStatus").value = appConfig.botStatus;
+          withdrawQueue = res.adminData.withdrawals || [];
+          renderAdminWithdrawals();
+        }
+      } catch (err) {
+        console.warn("Running in standalone preview mode (Backend not connected yet):", err);
+      }
+    }
+
+    // Initialize Telegram Mini App SDK & Verify Admin Identity
+    try {
+      if (tg) {
+        tg.ready();
+        tg.expand();
+        if (tg.setHeaderColor) tg.setHeaderColor("#0f172a");
+        if (tg.setBackgroundColor) tg.setBackgroundColor("#0f172a");
+
+        const user = tg.initDataUnsafe?.user;
+        if (user) {
+          const fullName = [user.first_name, user.last_name].filter(Boolean).join(" ");
+          userState.id = String(user.id);
+          userState.name = fullName || "User";
+
+          document.getElementById("userName").textContent = userState.name;
+          document.getElementById("userId").textContent = userState.id;
+
+          if (userState.id === ADMIN_TELEGRAM_ID) {
+            enableAdminMode();
+          }
+        }
+        syncWithBackend();
+      }
+    } catch (err) {
+      console.warn("Telegram WebApp initialization warning:", err);
+    }
+
+    /**
+     * Unlocks exclusive Admin UI controls for Telegram ID 6929261368
+     */
+    function enableAdminMode() {
+      userState.isAdmin = true;
+      document.body.classList.add("is-admin");
+      renderAdminWithdrawals();
+    }
+
+    /**
+     * Updates displayed balances across Home and Withdraw sections
+     */
+    function updateBalanceUI() {
+      const formatted = userState.balance.toFixed(2);
+      document.getElementById("mainBalance").textContent = formatted;
+      document.getElementById("withdrawBalance").textContent = formatted;
+    }
+
+    /**
+     * Displays a smooth, non-blocking toast notification
+     */
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      if (tg?.HapticFeedback) {
+        tg.HapticFeedback.notificationOccurred("success");
+      }
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3200);
+    }
+
+    /**
+     * Validates Minimum Withdrawal (10 USDT), wallet address, and submits to Backend
+     */
+    async function requestWithdraw() {
+      if (appConfig.botStatus === "maintenance") {
+        showToast(
+          language === "ar"
+            ? "البوت في وضع الصيانة حالياً، يرجى المحاولة لاحقاً."
+            : "Bot is currently under maintenance. Please try later."
+        );
+        return;
+      }
+
+      const network = document.getElementById("network").value;
+      const wallet = document.getElementById("wallet").value.trim();
+      const amount = parseFloat(document.getElementById("amount").value);
+      const minLimit = appConfig.minWithdraw;
+
+      if (!wallet || wallet.length < 10) {
+        showToast(
+          language === "ar"
+            ? "يرجى إدخال عنوان محفظة صحيح أولاً."
+            : "Please enter a valid wallet address first."
+        );
+        return;
+      }
+
+      if (isNaN(amount) || amount < minLimit) {
+        showToast(
+          language === "ar"
+            ? `الحد الأدنى للسحب هو ${minLimit} USDT.`
+            : `Minimum withdrawal amount is ${minLimit} USDT.`
+        );
+        return;
+      }
+
+      if (amount > userState.balance) {
+        showToast(
+          language === "ar"
+            ? "رصيدك الحالي غير كافٍ لإتمام عملية السحب."
+            : "Insufficient balance for this withdrawal."
+        );
+        return;
+      }
+
+      try {
+        const res = await apiRequest("/api/withdraw", { network, wallet, amount });
+        if (!res.ok) {
+          showToast(res.error || "Error submitting withdrawal");
+          return;
+        }
+        userState.balance = res.newBalance;
+        updateBalanceUI();
+        document.getElementById("amount").value = "";
+        showToast(
+          language === "ar"
+            ? `تم إرسال طلب السحب #${res.reqId} بقيمة ${amount.toFixed(2)} USDT إلى الإدارة.`
+            : `Withdrawal #${res.reqId} for ${amount.toFixed(2)} USDT sent to admin.`
+        );
+        if (userState.isAdmin) syncWithBackend();
+      } catch (e) {
+        showToast(
+          language === "ar"
+            ? "تعذر الاتصال بالخادم، تأكد من تشغيل bot.py."
+            : "Could not reach backend server."
+        );
+      }
+    }
+
+    /* ================= ADMIN PANEL FUNCTIONS ================= */
+
+    async function saveAdminSettings() {
+      if (!userState.isAdmin) return;
+
+      const newMin = parseFloat(document.getElementById("adminMinWithdraw").value);
+      const newRef = parseFloat(document.getElementById("adminRefReward").value);
+      const newStatus = document.getElementById("adminBotStatus").value;
+
+      try {
+        const res = await apiRequest("/api/admin", {
+          action: "save_settings",
+          minWithdraw: newMin,
+          refReward: newRef,
+          botStatus: newStatus
+        });
+        if (res.ok) {
+          await syncWithBackend();
+          showToast(
+            language === "ar"
+              ? "✅ تم حفظ وتحديث إعدادات البوت في قاعدة البيانات!"
+              : "✅ Bot settings saved to database!"
+          );
+        }
+      } catch (e) {
+        showToast("Connection error while saving settings.");
+      }
+    }
+
+    async function adminSetDemoBalance() {
+      if (!userState.isAdmin) return;
+      const targetId = document.getElementById("adminTargetUserId").value.trim() || userState.id;
+      const val = parseFloat(document.getElementById("adminAddBalance").value);
+      if (isNaN(val) || val < 0) return;
+
+      try {
+        const res = await apiRequest("/api/admin", {
+          action: "set_balance",
+          targetUserId: targetId,
+          balance: val
+        });
+        if (res.ok) {
+          await syncWithBackend();
+          showToast(
+            language === "ar"
+              ? `✅ تم تحديث رصيد الحساب (${targetId}) إلى ${val.toFixed(2)} USDT`
+              : `✅ Updated balance for (${targetId}) to ${val.toFixed(2)} USDT`
+          );
+        }
+      } catch (e) {
+        showToast("Connection error.");
+      }
+    }
+
+    async function handleWithdrawAction(reqId, action) {
+      if (!userState.isAdmin) return;
+      try {
+        const res = await apiRequest("/api/admin", { action, reqId });
+        if (res.ok) {
+          await syncWithBackend();
+          showToast(
+            action === "approved"
+              ? (language === "ar" ? `✅ تمت الموافقة على الطلب #${reqId} وإشعار المستخدم` : `✅ Request #${reqId} Approved`)
+              : (language === "ar" ? `❌ تم رفض الطلب #${reqId} وإعادة الرصيد` : `❌ Request #${reqId} Rejected`)
+          );
+        }
+      } catch (e) {
+        showToast("Connection error.");
+      }
+    }
+
+    /**
+     * Toggles interface language between Arabic (RTL) and English (LTR)
+     */
+    function toggleLang() {
+      language = language === "ar" ? "en" : "ar";
+      document.documentElement.lang = language;
+      document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+      document.getElementById("langLabel").textContent = language === "ar" ? "EN" : "AR";
+
+      document.querySelectorAll("[data-ar]").forEach(el => {
+        el.textContent = el.dataset[language];
+      });
+
+      document.querySelectorAll("[data-ar-placeholder]").forEach(input => {
+        input.placeholder = input.getAttribute(`data-${language}-placeholder`);
+      });
+
+      if (userState.isAdmin) {
+        renderAdminWithdrawals();
+      }
+    }
+
+    /**
+     * Generates and copies the user's Telegram referral link
+     */
+    function copyReferral() {
+      const botUsername = appConfig.botUsername;
+      const userId = userState.id;
+
+      if (!userId || botUsername === "YOUR_BOT_USERNAME") {
+        showToast(
+          language === "ar"
+            ? "سيكون رابط الدعوة متاحاً بعد ضبط اسم البوت."
+            : "Referral link will be available after setting bot username."
+        );
+        return;
+      }
+
+      const link = `https://t.me/${botUsername}?start=${userId}`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link)
+          .then(() => showToast(language === "ar" ? "تم نسخ رابط الدعوة!" : "Referral link copied!"))
+          .catch(() => showToast(link));
+      } else {
+        showToast(link);
+      }
+    }
+
+    /**
+     * Validates Minimum Withdrawal (10 USDT), wallet address, and user balance
+     */
+    function requestWithdraw() {
+      if (appConfig.botStatus === "maintenance") {
+        showToast(
+          language === "ar"
+            ? "البوت في وضع الصيانة حالياً، يرجى المحاولة لاحقاً."
+            : "Bot is currently under maintenance. Please try later."
+        );
+        return;
+      }
+
+      const network = document.getElementById("network").value;
+      const wallet = document.getElementById("wallet").value.trim();
+      const amount = parseFloat(document.getElementById("amount").value);
+      const minLimit = appConfig.minWithdraw;
+
+      if (!wallet || wallet.length < 10) {
+        showToast(
+          language === "ar"
+            ? "يرجى إدخال عنوان محفظة صحيح أولاً."
+            : "Please enter a valid wallet address first."
+        );
+        return;
+      }
+
+      if (isNaN(amount) || amount < minLimit) {
+        showToast(
+          language === "ar"
+            ? `الحد الأدنى للسحب هو ${minLimit} USDT.`
+            : `Minimum withdrawal amount is ${minLimit} USDT.`
+        );
+        return;
+      }
+
+      if (amount > userState.balance) {
+        showToast(
+          language === "ar"
+            ? "رصيدك الحالي غير كافٍ لإتمام عملية السحب."
+            : "Insufficient balance for this withdrawal."
+        );
+        return;
+      }
+
+      // Deduct balance and push request to Admin Queue
+      userState.balance -= amount;
+      updateBalanceUI();
+
+      withdrawQueue.unshift({
+        id: Math.floor(100 + Math.random() * 900),
+        userId: userState.id || "Unknown",
+        userName: userState.name,
+        network: network,
+        wallet: wallet,
+        amount: amount,
+        status: "pending"
+      });
+
+      if (userState.isAdmin) {
+        renderAdminWithdrawals();
+      }
+
+      document.getElementById("amount").value = "";
+      showToast(
+        language === "ar"
+          ? `تم إرسال طلب سحب ${amount.toFixed(2)} USDT بنجاح وهو قيد مراجعة الإدارة.`
+          : `Withdrawal request for ${amount.toFixed(2)} USDT submitted for admin review.`
+      );
+    }
+
+    /* ================= ADMIN PANEL FUNCTIONS ================= */
+
+    function saveAdminSettings() {
+      if (!userState.isAdmin) return;
+
+      const newBotUser = document.getElementById("adminBotUser").value.trim();
+      const newMin = parseFloat(document.getElementById("adminMinWithdraw").value);
+      const newRef = parseFloat(document.getElementById("adminRefReward").value);
+      const newStatus = document.getElementById("adminBotStatus").value;
+
+      if (newBotUser) appConfig.botUsername = newBotUser;
+      if (!isNaN(newMin) && newMin > 0) {
+        appConfig.minWithdraw = newMin;
+        document.getElementById("minWithdrawDisplay").textContent = newMin.toFixed(2);
+        document.getElementById("amount").min = newMin;
+        document.getElementById("amount").placeholder = `${newMin.toFixed(2)} USDT`;
+      }
+      if (!isNaN(newRef) && newRef >= 0) {
+        appConfig.refReward = newRef;
+        document.getElementById("refRewardDisplay").textContent = newRef.toFixed(2);
+      }
+      appConfig.botStatus = newStatus;
+
+      showToast(
+        language === "ar"
+          ? "✅ تم حفظ وتحديث إعدادات البوت بنجاح!"
+          : "✅ Bot settings updated successfully!"
+      );
+    }
+
+    function adminSetDemoBalance() {
+      if (!userState.isAdmin) return;
+      const val = parseFloat(document.getElementById("adminAddBalance").value);
+      if (isNaN(val) || val < 0) return;
+
+      userState.balance = val;
+      updateBalanceUI();
+      showToast(
+        language === "ar"
+          ? `تم تحديث رصيدك إلى ${val.toFixed(2)} USDT`
+          : `Balance updated to ${val.toFixed(2)} USDT`
+      );
+    }
+
+    function handleWithdrawAction(reqId, action) {
+      if (!userState.isAdmin) return;
+      const req = withdrawQueue.find(r => r.id === reqId);
+      if (!req) return;
+
+      req.status = action;
+      renderAdminWithdrawals();
+
+      showToast(
+        action === "approved"
+          ? (language === "ar" ? `✅ تمت الموافقة على الطلب #${reqId}` : `✅ Request #${reqId} Approved`)
+          : (language === "ar" ? `❌ تم رفض الطلب #${reqId}` : `❌ Request #${reqId} Rejected`)
+      );
+    }
+
+    function renderAdminWithdrawals() {
+      const container = document.getElementById("adminWithdrawList");
+      const pendingCount = withdrawQueue.filter(r => r.status === "pending").length;
+      document.getElementById("adminPendingCount").textContent = pendingCount;
+
+      if (withdrawQueue.length === 0) {
+        container.innerHTML = `<div class="notice">${language === "ar" ? "لا توجد طلبات سحب حالياً." : "No withdrawal requests yet."}</div>`;
+        return;
+      }
+
+      container.innerHTML = withdrawQueue.map(req => {
+        const shortWallet = req.wallet.length > 14
+          ? `${req.wallet.slice(0, 6)}...${req.wallet.slice(-6)}`
+          : req.wallet;
+
+        let actionHtml = "";
+        if (req.status === "pending") {
+          actionHtml = `
+            <div style="display: flex; gap: 6px; margin-top: 10px;">
+              <button class="btn-sm btn-approve" style="flex: 1;" onclick="handleWithdrawAction(${req.id}, 'approved')">
+                ${language === "ar" ? "✓ موافقة" : "✓ Approve"}
+              </button>
+              <button class="btn-sm btn-reject" style="flex: 1;" onclick="handleWithdrawAction(${req.id}, 'rejected')">
+                ${language === "ar" ? "✕ رفض" : "✕ Reject"}
+              </button>
+            </div>
+          `;
+        } else {
+          const statusText = req.status === "approved"
+            ? (language === "ar" ? "✅ تمت الموافقة" : "✅ Approved")
+            : (language === "ar" ? "❌ مرفوض" : "❌ Rejected");
+          actionHtml = `<div style="margin-top: 8px; font-size: 12px; font-weight: 700; color: ${req.status === 'approved' ? 'var(--green)' : 'var(--danger)'};">${statusText}</div>`;
+        }
+
+        return `
+          <div class="admin-card" style="padding: 14px; margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <b>#${req.id} • ${req.userName} <span class="muted">(${req.userId})</span></b>
+              <span class="badge">${req.amount.toFixed(2)} USDT</span>
+            </div>
+            <div class="muted" style="margin-top: 6px; font-size: 12px;">
+              ${req.network} • <span style="font-family: monospace;">${shortWallet}</span>
+            </div>
+            ${actionHtml}
+          </div>
+        `;
+      }).join("");
+    }
+  </script>
+
+</body>
+</html>
